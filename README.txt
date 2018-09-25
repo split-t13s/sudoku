@@ -1,0 +1,1 @@
+A currently text-based (no GUI) sudoku game. I decided to build a sudoku as I took a long break (4 months, it was a busy summer) from programming and need to sharpen up my skills.
