@@ -1,11 +1,11 @@
 package tests;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
+
 import java.util.HashSet;
+import java.util.Random;
+
 import core.GameGrid;
 import core.GridNumber;
 
@@ -17,58 +17,105 @@ public class GameGridTest {
     GameGrid gameGrid = new GameGrid(gridSize);
     GridNumber[][] grid = gameGrid.getGrid();
 
+    /**
+     * Concept is the same for inCol
+     */
     @Test
-    public void testGridArea() {
-        assertEquals(gridSize * gridSize, gameGrid.getGridArea());
-    }
-
-    @Test
-    public void testEasyClues() {
-        int numOfClues = 0;
-        int min = gridSize*4;
-        int max = gridSize*5;
+    @RepeatedTest(5)
+    public void inRow() {
         gameGrid.easy();
-        for (int i = 0; i < grid.length; i++) {
-            for (int j = 0; j < grid[i].length; j++) {
-                if (grid[i][j].getValue() != 0) {
-                    numOfClues++;
-                }
+        gameGrid.printGrid();
+        int row = 1;
+        int number = 4;
+        boolean isInRow = false;
+        for (int col = 0; col < grid.length; col++) {
+            if (grid[row][col].getValue() == number) {
+                System.out.println("yes     row: " + (row + 1) + " col: " + (col + 1));
+                isInRow = true;
             }
         }
-        assertTrue(min <= numOfClues && numOfClues <= max);
-        assertFalse(max < numOfClues);
-        assertFalse(numOfClues < min);
+        assertFalse(isInRow);
     }
 
     @Test
-    @RepeatedTest(3)
-    public void testDuplicates() {
-        gameGrid.medium();
-        boolean duplicate = false;
-        for (int i = 0; i < grid.length; i++) {
-            // Create HashSets that will store the current row and column
-            HashSet<Integer> row = new HashSet<Integer>();
-            HashSet<Integer> column = new HashSet<Integer>();
-            for (int j = 0; j < grid.length; j++) {
-                // Ignore 0 values
-                if (grid[i][j].getValue() != 0){
-                    // Check if set already contains current value
-                    if (row.contains(grid[i][j].getValue())){
-                        duplicate = true;
-                        break;
-                    }
-                    row.add(grid[i][j].getValue());
-                }
-                if (grid[j][i].getValue() != 0){
-                    // Check if set already contains current value
-                    if (column.contains(grid[j][i].getValue())){
-                        duplicate = true;
-                        break;
-                    }
-                    column.add(grid[j][i].getValue());
+    @RepeatedTest(5)
+    public void inBox() {
+        gameGrid.easy();
+        gameGrid.printGrid();
+        int boxStartRow = 0;
+        int boxStartCol = 0;
+        int initRow = randInt(0, gridSize - 1);
+        int initCol = 8;
+        int number = 4;
+        boolean isInBox = false;
+        boxStartRow = gameGrid.getBoxStart(initRow);
+        boxStartCol = gameGrid.getBoxStart(initCol);
+        for (int row = boxStartRow; row < boxStartRow + 3; row++) {
+            for (int col = boxStartCol; col < boxStartCol + +3; col++) {
+                if (grid[row][col].getValue() == number) {
+                    isInBox = true;
                 }
             }
         }
+        assertFalse(isInBox);
+    }
+
+    /**
+     * Tests if a newly generated random number would be invalid if it were to be entered into the current grid.
+     * This has been applied to the populateGrid() method and has been slightly simplified with the checkDuplicate()
+     * method.
+     */
+    @Test
+    @RepeatedTest(10)
+    public void testDuplication() {
+        int number = randInt(1, gridSize);
+        int row = randInt(0, gridSize - 1);
+        int col = randInt(0, gridSize - 1);
+        boolean duplicate = false;
+        gameGrid.extreme();
+        boolean isInRow = gameGrid.inRow(row, number);
+        boolean isInCol = gameGrid.inCol(col, number);
+        boolean isInBox = gameGrid.inBox(row, col, number);
+        // logging will be used in lieu of println at a later date
+        if (isInRow) {
+            System.out.println("***IN ROW*** number: " + number + " row: " + (row + 1));
+            duplicate = true;
+        } else if (isInCol) {
+            System.out.println("***IN COL*** number: " + number + " col: " + (col + 1));
+            duplicate = true;
+        } else if (isInBox) {
+            System.out.println("***IN BOX*** number: " + number + " row: " + (row + 1) + " col: " + (col + 1));
+            duplicate = true;
+        }
+        gameGrid.printGrid();
         assertFalse(duplicate);
+    }
+
+    @Test
+    public void getNextEmpty() {
+        gameGrid.easy();
+        boolean emptyFound = false;
+        for (int row = 0; row < grid.length; row++) {
+            for (int col = 0; col < grid.length; col++) {
+                if (grid[row][col].getValue() == 0) {
+                    emptyFound = true;
+                }
+            }
+        }
+        assertTrue(emptyFound);
+    }
+
+    /**
+     * Brute force
+     */
+    @Test
+    public void solve() {
+
+    }
+
+    private int randInt(int min, int max) {
+        Random random = new Random();
+        int value = random.nextInt((max - min) + 1) + min;
+        return value;
     }
 }
