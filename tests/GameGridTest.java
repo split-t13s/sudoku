@@ -3,11 +3,11 @@ package tests;
 import org.junit.Test;
 import org.junit.jupiter.api.RepeatedTest;
 
-import java.util.HashSet;
 import java.util.Random;
 
 import core.GameGrid;
 import core.GridNumber;
+import core.Square;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -91,18 +91,22 @@ public class GameGridTest {
         assertFalse(duplicate);
     }
 
+    @SuppressWarnings("Duplicates")
     @Test
     public void getNextEmpty() {
         gameGrid.easy();
-        boolean emptyFound = false;
-        for (int row = 0; row < grid.length; row++) {
+        Square square = new Square();
+        rowLoop: for (int row = 0; row < grid.length; row++) {
             for (int col = 0; col < grid.length; col++) {
                 if (grid[row][col].getValue() == 0) {
-                    emptyFound = true;
+                    square.setRow(row);
+                    square.setCol(col);
+                    square.setEmpty(true);
+                    break rowLoop;
                 }
             }
         }
-        assertTrue(emptyFound);
+        assertTrue(square.isEmpty());
     }
 
     /**

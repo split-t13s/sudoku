@@ -202,20 +202,24 @@ public class GameGrid {
         return boxStart;
     }
 
+    @SuppressWarnings("Duplicates")
     /**
      * Searches the grid for the next instance of an empty slot (represented by 0).
-     * @return boolean where true indicates an empty slot has been found (false implies the grid is full)
+     * @return Square object that holds coordinates of next empty square
      */
-    public boolean getNextEmpty() {
-        boolean emptyFound = false;
-        for (int row = 0; row < grid.length; row++) {
+    public Square getNextEmpty() {
+        Square square = new Square();
+        rowLoop: for (int row = 0; row < grid.length; row++) {
             for (int col = 0; col < grid.length; col++) {
                 if (grid[row][col].getValue() == 0) {
-                    emptyFound = true;
+                    square.setRow(row);
+                    square.setCol(col);
+                    square.setEmpty(true);
+                    break rowLoop;
                 }
             }
         }
-        return emptyFound;
+        return square;
     }
 
     /**
