@@ -1,5 +1,6 @@
 package tests;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
 
@@ -13,54 +14,50 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class GameGridTest {
 
-    int gridSize;
-    GameGrid gameGrid;
-    GridNumber[][] grid;
+    static int gridSize;
+    static GameGrid gameGrid;
+    static GridNumber[][] grid;
 
-    @BeforeEach
-    public void setUp(){
+    @BeforeAll
+    public static void setUp(){
         gridSize = 9;
         gameGrid = new GameGrid(gridSize);
         grid = gameGrid.getGrid();
         gameGrid.easy();
     }
 
-    /**
-     * Concept is the same for inCol
-     */
     @RepeatedTest(5)
     public void inRow() {
-        gameGrid.printGrid();
         int row = randInt(0, gridSize - 1);
         int number = randInt(1, gridSize);
         boolean isInRow = false;
         for (int col = 0; col < grid.length; col++) {
             if (grid[row][col].getValue() == number) {
-                System.out.println("number: " + number + "row: " + (row + 1));
+                System.out.println("number: " + number + " row: " + (row + 1));
                 isInRow = true;
             }
         }
+        gameGrid.printGrid();
         assertFalse(isInRow);
     }
 
     @RepeatedTest(5)
     public void inCol() {
-        gameGrid.printGrid();
         int col = randInt(0, gridSize - 1);
         int number = randInt(1, gridSize);
         boolean isInCol = false;
         for (int row = 0; row < grid.length; row++) {
             if (grid[row][col].getValue() == number) {
-                System.out.println("number: " + "col: " + (col + 1));
+                System.out.println("number: " + number + " col: " + (col + 1));
                 isInCol = true;
             }
         }
+        gameGrid.printGrid();
         assertFalse(isInCol);
     }
 
     @RepeatedTest(5)
     public void inBox() {
-        gameGrid.printGrid();
         int boxStartRow = 0;
         int boxStartCol = 0;
         int initRow = randInt(0, gridSize - 1);
@@ -72,10 +69,12 @@ public class GameGridTest {
         for (int row = boxStartRow; row < boxStartRow + 3; row++) {
             for (int col = boxStartCol; col < boxStartCol + +3; col++) {
                 if (grid[row][col].getValue() == number) {
+                    System.out.println("number: " + number + " row: " + row + " col: " + (col + 1));
                     isInBox = true;
                 }
             }
         }
+        gameGrid.printGrid();
         assertFalse(isInBox);
     }
 
@@ -112,7 +111,6 @@ public class GameGridTest {
     @RepeatedTest(5)
     public void getNextEmpty() {
         Square square = new Square();
-        System.out.println("length: " + grid.length);
         rowLoop: for (int row = 0; row < grid.length; row++) {
             for (int col = 0; col < grid.length; col++) {
                 if (grid[row][col].getValue() == 0) {
