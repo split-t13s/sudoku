@@ -1,29 +1,42 @@
 package tests;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
 
+import java.util.List;
 import java.util.Random;
 
 import core.GameGrid;
 import core.GridNumber;
 import core.Square;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 public class GameGridTest {
 
+    List<Square> prevSquares;
     static int gridSize;
     static GameGrid gameGrid;
     static GridNumber[][] grid;
+    static long gameSeed;
+    static int[][] example = {{5, 0, 0, 6, 7, 0, 9, 0, 0},
+            {0, 4, 0, 8, 0, 0, 0, 0, 0},
+            {8, 0, 0, 5, 0, 0, 6, 1, 3},
+            {0, 6, 2, 4, 0, 0, 0, 7, 0},
+            {1, 0, 0, 0, 0, 3, 0, 2, 0},
+            {3, 7, 4, 9, 0, 8, 0, 0, 0},
+            {0, 9, 6, 1, 0, 7, 8, 0, 2},
+            {2, 1, 8, 0, 0, 6, 0, 4, 5},
+            {0, 5, 0, 0, 8, 0, 0, 9, 0}};
 
     @BeforeAll
-    public static void setUp(){
+    public static void setUp() {
         gridSize = 9;
+        gameSeed = 1538076114034L;
         gameGrid = new GameGrid(gridSize);
         grid = gameGrid.getGrid();
-        gameGrid.easy();
+        fillGridWithExample();
     }
 
     @RepeatedTest(5)
@@ -111,7 +124,8 @@ public class GameGridTest {
     @RepeatedTest(5)
     public void getNextEmpty() {
         Square square = new Square();
-        rowLoop: for (int row = 0; row < grid.length; row++) {
+        rowLoop:
+        for (int row = 0; row < grid.length; row++) {
             for (int col = 0; col < grid.length; col++) {
                 if (grid[row][col].getValue() == 0) {
                     square.setRow(row);
@@ -124,9 +138,50 @@ public class GameGridTest {
         assertTrue(square.isEmpty());
     }
 
+    /**
+     * Brute force
+     */
+    @RepeatedTest(1)
+    public void solve(List<Square> prevSquares) {
+        Square nextSquare = gameGrid.getNextEmpty();
+        int squareNum = nextSquare.getNumber();
+        if (squareNum == 0) {
+            squareNum = 1;
+        }
+        if (nextSquare.isEmpty()) {
+            int row = nextSquare.getRow();
+            int col = nextSquare.getCol();
+            for (int number = squareNum; number <= gridSize; number++) {
+                if (!gameGrid.checkDuplicate(row, col, number)) {
+                    grid[row][col].setValue(number);
+                    nextSquare.setNumber(number);
+                    prevSquares.add(nextSquare);
+                    System.out.println(number);
+                    gameGrid.printGrid();
+                    solve(prevSquares);
+                } else if (gameGrid.checkDuplicate(row, col, number) && number == gridSize) {
+                    prevSquares.remove(prevSquares.size());
+                    solve(prevSquares);
+                }
+            }
+        } else {
+            System.out.println("end");
+            // grid filled
+        }
+    }
+
+
     private int randInt(int min, int max) {
         Random random = new Random();
         int value = random.nextInt((max - min) + 1) + min;
         return value;
+    }
+
+    private static void fillGridWithExample() {
+        for (int row = 0; row < example.length; row++) {
+            for (int col = 0; col < example.length; col++) {
+                grid[row][col].setValue(example[row][col]);
+            }
+        }
     }
 }
