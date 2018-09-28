@@ -7,7 +7,7 @@ public class Square {
     public int number;
 
     public Square() {
-        this.empty = true;
+        this.empty = false;
         this.row = 0;
         this.col = 0;
         this.number = 0;
