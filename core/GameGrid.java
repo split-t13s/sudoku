@@ -353,7 +353,6 @@ public class GameGrid {
     public static void main(String[] args) {
         GameGrid gameGrid = new GameGrid(9);
         gameGrid.fillGridWithExample(examplethree);     // currently fails
-        gameGrid.fillGridWithExample(examplethree);
         //gameGrid.easy();
         gameGrid.solve(gameGrid.getPrevSquares(), false);
     }
