@@ -264,47 +264,59 @@ public class GameGrid {
 
     @SuppressWarnings("Duplicates")
     /**
-     * Brute force approach
+     * recurSolve() method (previously named solve()) adapted to function with a while-loop to overcome deep recursion
+     * StackOverflow error. recurSolve() moved to legacy_methods.old
      */
-    public void solve(List<Square> prevSquares, boolean redo) {
-        Square nextSquare = null;
+    public void whileSolve() {
+        Square nextSquare = getNextEmpty();
+        List<Square> prevSquares = new ArrayList<Square>();
         int row = 0;
         int col = 0;
         int squareNum = 0;
-        if (redo) {
-            Square prevSquare = prevSquares.get((prevSquares.size() - 1));
-            row = prevSquare.getRow();
-            col = prevSquare.getCol();
-            squareNum = prevSquare.getNumber();
-            nextSquare = prevSquare;
-            prevSquares.remove(prevSquare);
-        } else {
-            nextSquare = getNextEmpty();
-            row = nextSquare.getRow();
-            col = nextSquare.getCol();
-            squareNum = nextSquare.getNumber();
-            if (squareNum == 0) {
-                squareNum = 1;
-            }
-        }
-        if (nextSquare.isEmpty()) {
-            for (int number = squareNum; number <= gridSize; number++) {
-                if (!checkDuplicate(row, col, number)) {
-                    grid[row][col].setValue(number);
-                    nextSquare.setNumber(number);
-                    prevSquares.add(nextSquare);
-                    System.out.println(number);
-                    printGrid();
-                    solve(prevSquares, false);
-                    break;
-                } else if (checkDuplicate(row, col, number) && number == 9) {
-                    grid[row][col].setValue(0);
-                    solve(prevSquares, true);
-                    break;
+        boolean backtrace = false;
+        while (nextSquare.isEmpty()) {
+            if (backtrace) {
+                // Get last number and remove from previous moves, increment from last number
+                Square prevSquare = prevSquares.get((prevSquares.size() - 1));
+                row = prevSquare.getRow();
+                col = prevSquare.getCol();
+                squareNum = prevSquare.getNumber();
+                nextSquare = prevSquare;        // prevSquare will be empty so nextSquare.isEmpty() will be true
+                prevSquares.remove(prevSquare);
+            } else {
+                // Get next empty square
+                nextSquare = getNextEmpty();
+                row = nextSquare.getRow();
+                col = nextSquare.getCol();
+                squareNum = nextSquare.getNumber();
+                if (squareNum == 0) {
+                    // 0 is not a valid solution number
+                    squareNum = 1;
                 }
             }
-        } else {
-            System.out.println("solved");
+            if (nextSquare.isEmpty()) {
+                numLoop:
+                for (int number = squareNum; number <= 9; number++) {
+                    if (!checkDuplicate(row, col, number)) {
+                        // Set chosen number
+                        grid[row][col].setValue(number);
+                        nextSquare.setNumber(number);
+                        prevSquares.add(nextSquare);
+                        nextSquare = getNextEmpty();
+                        backtrace = false;
+                        // print
+                        System.out.println(number);
+                        printGrid();
+                        break numLoop;
+                    } else if (checkDuplicate(row, col, number) && number == 9) {
+                        grid[row][col].setValue(0);
+                        backtrace = true;
+                        break numLoop;
+                    }
+                }
+            } else {
+                System.out.println("solved");
+            }
         }
     }
 
@@ -353,7 +365,8 @@ public class GameGrid {
     public static void main(String[] args) {
         GameGrid gameGrid = new GameGrid(9);
         gameGrid.fillGridWithExample(examplethree);     // currently fails
-        //gameGrid.easy();
-        gameGrid.solve(gameGrid.getPrevSquares(), false);
+        List<Square> prevSquares = new ArrayList<Square>();
+        //gameGrid.recurSolve(prevSquares(), false);
+        gameGrid.whileSolve();
     }
 }
