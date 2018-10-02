@@ -74,11 +74,10 @@ public class GameGrid {
      * clues for a 9x9 grid.
      */
     public void easy() {
-        int clues = randInt(gridSize * 4, gridSize * 5);    //Factor of gridSize used for scalability
-        int numFilled = 0;
-        while (numFilled != clues) {
-            populateGrid();
-            numFilled++;
+        int clues = randInt(gridSize * 4, gridSize * 5);
+        while (clues != 0) {
+            depopulateGrid();
+            clues--;
         }
     }
 
@@ -86,11 +85,10 @@ public class GameGrid {
      * Generates a puzzle of medium difficulty. For a 9x9 grid a puzzle will contain between 27 and 35 clues.
      */
     public void medium() {
-        int clues = randInt(gridSize * 3, gridSize * 4 - 1);
-        int numFilled = 0;
-        while (numFilled != clues) {
-            populateGrid();
-            numFilled++;
+        int clues = randInt((gridSize * 5) + 1, gridSize * 6);
+        while (clues != 0) {
+            depopulateGrid();
+            clues--;
         }
     }
 
@@ -98,11 +96,10 @@ public class GameGrid {
      * Generates a puzzle of hard difficulty. A 9x9 grid will have between 18 and 26 clues.
      */
     public void hard() {
-        int clues = randInt(gridSize * 2, gridSize * 3 - 1);
-        int numFilled = 0;
-        while (numFilled != clues) {
-            populateGrid();
-            numFilled++;
+        int clues = randInt((gridSize * 6) + 1, gridSize * 7);
+        while (clues != 0) {
+            depopulateGrid();
+            clues--;
         }
     }
 
@@ -110,7 +107,15 @@ public class GameGrid {
      * Generates a puzzle of extreme difficulty. A 9x9 grid will have between 9 and 17 clues.
      */
     public void extreme() {
-        int clues = randInt(gridSize * 1, gridSize * 2 - 1);
+        int clues = randInt((gridSize * 7) + 1, gridSize * 8);
+        while (clues != 0) {
+            depopulateGrid();
+            clues--;
+        }
+    }
+
+    public void initialClues() {
+        int clues = randInt(gridSize, gridSize + 3);
         int numFilled = 0;
         while (numFilled != clues) {
             populateGrid();
@@ -139,8 +144,18 @@ public class GameGrid {
             } else {
                 // If the current generated number is valid then apply it to the grid
                 grid[row][col].setValue(number);
-                grid[row][col].setValueAsString(Integer.toString(number));
             }
+        }
+    }
+
+    public void depopulateGrid() {
+        int row = randInt(0, gridSize - 1);
+        int col = randInt(0, gridSize - 1);
+        // If coordinates already empty then generate new coordinates
+        if (grid[row][col].getValue() == 0) {
+            depopulateGrid();
+        } else {
+            grid[row][col].setValue(0);
         }
     }
 
@@ -305,8 +320,8 @@ public class GameGrid {
                         nextSquare = getNextEmpty();
                         backtrace = false;
                         // print
-                        System.out.println(number);
-                        printGrid();
+                        //System.out.println(number);
+                        //printGrid();
                         break numLoop;
                     } else if (checkDuplicate(row, col, number) && number == 9) {
                         grid[row][col].setValue(0);
@@ -346,12 +361,22 @@ public class GameGrid {
         System.out.println();
     }
 
-    private void fillGridWithExample(int[][] example) {
+    private void arrayToGrid(int[][] example) {
         for (int row = 0; row < example.length; row++) {
             for (int col = 0; col < example.length; col++) {
                 grid[row][col].setValue(example[row][col]);
             }
         }
+    }
+
+    private int[][] gridToArray() {
+        int[][] gridArray = new int[gridSize][gridSize];
+        for (int row = 0; row < grid.length; row++) {
+            for (int col = 0; col < grid.length; col++) {
+                gridArray[row][col] = grid[row][col].getValue();
+            }
+        }
+        return gridArray;
     }
 
     public List<Square> getPrevSquares() {
@@ -364,9 +389,10 @@ public class GameGrid {
 
     public static void main(String[] args) {
         GameGrid gameGrid = new GameGrid(9);
-        gameGrid.fillGridWithExample(examplethree);     // currently fails
-        List<Square> prevSquares = new ArrayList<Square>();
-        //gameGrid.recurSolve(prevSquares(), false);
+        //gameGrid.arrayToGrid(example);     // currently fails
+        gameGrid.initialClues();
         gameGrid.whileSolve();
+        gameGrid.extreme();
+        gameGrid.printGrid();
     }
 }
