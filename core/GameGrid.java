@@ -1,15 +1,17 @@
 package core;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class GameGrid {
 
-    List<Square> prevSquares;       // temporary - for testing
     public GridNumber[][] grid;
-    private Random random;
-    private long gameSeed;
     int gridSize;           // Current gridsize will be 9x9; this will be extended to include 4x4, 12x12 and 16x16
 
     static int[][] example = {{5, 0, 0, 6, 7, 0, 9, 0, 0},
@@ -43,7 +45,6 @@ public class GameGrid {
             {0, 4, 0, 5, 0, 6, 0, 2, 0}};
 
     public GameGrid(int gridSize) {
-        prevSquares = new ArrayList<Square>();
         grid = new GridNumber[gridSize][gridSize];
         this.gridSize = gridSize;
         emptyGrid();
@@ -114,6 +115,9 @@ public class GameGrid {
         }
     }
 
+    /**
+     * Fills the grid with a small set of random numbers.
+     */
     public void initialClues() {
         int clues = randInt(gridSize, gridSize + 3);
         int numFilled = 0;
@@ -121,6 +125,15 @@ public class GameGrid {
             populateGrid();
             numFilled++;
         }
+    }
+
+    /**
+     * Empties grid and generates complete puzzle.
+     */
+    public void setupForNewGame() {
+        emptyGrid();
+        initialClues();
+        whileSolve();
     }
 
     /**
@@ -148,7 +161,10 @@ public class GameGrid {
         }
     }
 
-    public void depopulateGrid() {
+    /**
+     * Removes a random number from the grid.
+     */
+    private void depopulateGrid() {
         int row = randInt(0, gridSize - 1);
         int col = randInt(0, gridSize - 1);
         // If coordinates already empty then generate new coordinates
@@ -335,18 +351,6 @@ public class GameGrid {
         }
     }
 
-    private int randInt(int min, int max) {
-        Random random = new Random();
-        int value = random.nextInt((max - min) + 1) + min;
-        return value;
-    }
-
-    private int randInt(int min, int max, long gameSeed) {
-        Random random = new Random(gameSeed);
-        int clues = random.nextInt((max - min) + 1) + min;
-        return clues;
-    }
-
     /**
      * Prints a string representation of the grid
      */
@@ -359,6 +363,18 @@ public class GameGrid {
             System.out.println();
         }
         System.out.println();
+    }
+
+    private int randInt(int min, int max) {
+        Random random = new Random();
+        int value = random.nextInt((max - min) + 1) + min;
+        return value;
+    }
+
+    private int randInt(int min, int max, long gameSeed) {
+        Random random = new Random(gameSeed);
+        int clues = random.nextInt((max - min) + 1) + min;
+        return clues;
     }
 
     private void arrayToGrid(int[][] example) {
@@ -379,20 +395,11 @@ public class GameGrid {
         return gridArray;
     }
 
-    public List<Square> getPrevSquares() {
-        return prevSquares;
-    }
-
-    public void setPrevSquares(List<Square> prevSquares) {
-        this.prevSquares = prevSquares;
-    }
-
     public static void main(String[] args) {
         GameGrid gameGrid = new GameGrid(9);
-        //gameGrid.arrayToGrid(example);     // currently fails
-        gameGrid.initialClues();
-        gameGrid.whileSolve();
-        gameGrid.extreme();
+        //gameGrid.arrayToGrid(example);
+        gameGrid.setupForNewGame();
+        gameGrid.easy();
         gameGrid.printGrid();
     }
 }
