@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -13,36 +14,6 @@ public class GameGrid {
 
     public GridNumber[][] grid;
     int gridSize;           // Current gridsize will be 9x9; this will be extended to include 4x4, 12x12 and 16x16
-
-    static int[][] example = {{5, 0, 0, 6, 7, 0, 9, 0, 0},
-            {0, 4, 0, 8, 0, 0, 0, 0, 0},
-            {8, 0, 0, 5, 0, 0, 6, 1, 3},
-            {0, 6, 2, 4, 0, 0, 0, 7, 0},
-            {1, 0, 0, 0, 0, 3, 0, 2, 0},
-            {3, 7, 4, 9, 0, 8, 0, 0, 0},
-            {0, 9, 6, 1, 0, 7, 8, 0, 2},
-            {2, 1, 8, 0, 0, 6, 0, 4, 5},
-            {0, 5, 0, 0, 8, 0, 0, 9, 0}};
-
-    static int[][] exampletwo = {{0, 0, 6, 0, 5, 4, 0, 9, 0},
-            {3, 0, 2, 0, 6, 0, 0, 7, 0},
-            {0, 5, 0, 7, 0, 0, 6, 0, 8},
-            {5, 0, 0, 0, 0, 6, 7, 0, 0},
-            {0, 4, 9, 0, 3, 0, 0, 0, 0},
-            {0, 0, 7, 5, 0, 0, 0, 8, 9},
-            {7, 0, 1, 0, 0, 0, 0, 4, 0},
-            {0, 8, 0, 0, 7, 0, 5, 0, 2},
-            {0, 9, 0, 2, 0, 3, 0, 0, 0}};
-
-    static int[][] examplethree = {{0, 3, 0, 2, 0, 9, 0, 8, 0},
-            {7, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 2, 0, 7, 6, 1, 0, 4, 0},
-            {0, 0, 9, 0, 2, 0, 6, 0, 0},
-            {0, 7, 0, 0, 0, 0, 0, 3, 0},
-            {0, 0, 2, 0, 5, 0, 9, 0, 0},
-            {0, 6, 0, 3, 1, 2, 0, 5, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 3},
-            {0, 4, 0, 5, 0, 6, 0, 2, 0}};
 
     public GameGrid(int gridSize) {
         grid = new GridNumber[gridSize][gridSize];
@@ -352,6 +323,54 @@ public class GameGrid {
     }
 
     /**
+     * Get current state of game grid and store all values in a .sav file.
+     * @throws IOException
+     */
+    public void writeGridToFile() throws IOException {
+        int[][] currentGrid = gridToArray();
+        String str = "";
+        // Get numbers from grid and separate with commas
+        for (int row = 0; row < currentGrid.length; row++) {
+            for (int col = 0; col < currentGrid.length; col++) {
+                str += currentGrid[row][col];
+                if (row == gridSize - 1 && col == gridSize - 1) {
+                    // skip last number
+                } else {
+                    str += ",";
+                }
+            }
+        }
+        // Auto generate filename from current datetime
+        String filename = generateFilename();
+        String filepath = "saves/" + filename + ".sav";
+        Path path = Paths.get(filepath);
+        byte[] strToBytes = str.getBytes();
+        Files.write(path, strToBytes);
+    }
+
+    /**
+     * Read .sav file to restore a game grid from a previous state.
+     * @param filename - the file to be read.
+     * @return - int[][] containing the restored grid.
+     * @throws IOException
+     */
+    public int[][] readGridFromFile(String filename) throws IOException {
+        String filepath = "saves/" + filename;
+        int[][] gameFromFile = new int[gridSize][gridSize];
+        Path path = Paths.get(filepath);
+        String read = Files.readAllLines(path).get(0);
+        String[] numberArray = read.split(",");
+        int number = 0;
+        for (int row = 0; row < grid.length; row++) {
+            for (int col = 0; col < grid.length; col++) {
+                gameFromFile[row][col] = Integer.parseInt(numberArray[number]);
+                number++;
+            }
+        }
+        return gameFromFile;
+    }
+
+    /**
      * Prints a string representation of the grid
      */
     public void printGrid() {
@@ -377,7 +396,7 @@ public class GameGrid {
         return clues;
     }
 
-    private void arrayToGrid(int[][] example) {
+    public void arrayToGrid(int[][] example) {
         for (int row = 0; row < example.length; row++) {
             for (int col = 0; col < example.length; col++) {
                 grid[row][col].setValue(example[row][col]);
@@ -395,11 +414,24 @@ public class GameGrid {
         return gridArray;
     }
 
-    public static void main(String[] args) {
+    /**
+     * Get current datetime with illegal characters replaced and nanoseconds removed.
+     * @return String representation of datetime for filename use
+     */
+    private String generateFilename() {
+        String time = LocalDateTime.now().toString();
+        time = time.replace(":", ".");
+        time = time.replace("T", "-");
+        time = time.substring(0, time.length() - 4);
+        return time;
+    }
+
+    public static void main(String[] args) throws IOException{
         GameGrid gameGrid = new GameGrid(9);
         //gameGrid.arrayToGrid(example);
-        gameGrid.setupForNewGame();
-        gameGrid.easy();
-        gameGrid.printGrid();
+//        gameGrid.setupForNewGame();
+//        gameGrid.easy();
+//        gameGrid.writeGridToFile();
+//        gameGrid.printGrid();
     }
 }
