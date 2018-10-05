@@ -14,6 +14,15 @@ public class GameGrid {
 
     public GridNumber[][] grid;
     int gridSize;           // Current gridsize will be 9x9; this will be extended to include 4x4, 12x12 and 16x16
+    static int[][] example = {{5, 0, 0, 6, 7, 0, 9, 0, 0},
+            {0, 4, 0, 8, 0, 0, 0, 0, 0},
+            {8, 0, 0, 5, 0, 0, 6, 1, 3},
+            {0, 6, 2, 4, 0, 0, 0, 7, 0},
+            {1, 0, 0, 0, 0, 3, 0, 2, 0},
+            {3, 7, 4, 9, 0, 8, 0, 0, 0},
+            {0, 9, 6, 1, 0, 7, 8, 0, 2},
+            {2, 1, 8, 0, 0, 6, 0, 4, 5},
+            {0, 5, 0, 0, 8, 0, 0, 9, 0}};
 
     public GameGrid(int gridSize) {
         grid = new GridNumber[gridSize][gridSize];
@@ -327,12 +336,11 @@ public class GameGrid {
      * @throws IOException
      */
     public void writeGridToFile() throws IOException {
-        int[][] currentGrid = gridToArray();
         String str = "";
         // Get numbers from grid and separate with commas
-        for (int row = 0; row < currentGrid.length; row++) {
-            for (int col = 0; col < currentGrid.length; col++) {
-                str += currentGrid[row][col];
+        for (int row = 0; row < grid.length; row++) {
+            for (int col = 0; col < grid.length; col++) {
+                str += grid[row][col].getValue();
                 if (row == gridSize - 1 && col == gridSize - 1) {
                     // skip last number
                 } else {
@@ -384,27 +392,23 @@ public class GameGrid {
         System.out.println();
     }
 
-    private int randInt(int min, int max) {
-        Random random = new Random();
-        int value = random.nextInt((max - min) + 1) + min;
-        return value;
-    }
-
-    private int randInt(int min, int max, long gameSeed) {
-        Random random = new Random(gameSeed);
-        int clues = random.nextInt((max - min) + 1) + min;
-        return clues;
-    }
-
-    public void arrayToGrid(int[][] example) {
-        for (int row = 0; row < example.length; row++) {
-            for (int col = 0; col < example.length; col++) {
-                grid[row][col].setValue(example[row][col]);
+    /**
+     * Translates a given integer array to the game grid.
+     * @param array - the array to be passed to the grid
+     */
+    public void arrayToGrid(int[][] array ) {
+        for (int row = 0; row < array.length; row++) {
+            for (int col = 0; col < array.length; col++) {
+                grid[row][col].setValue(array[row][col]);
             }
         }
     }
 
-    private int[][] gridToArray() {
+    /**
+     * Stores the current game grid in an integer array.
+     * @return - the int array containing the grid
+     */
+    public int[][] gridToArray() {
         int[][] gridArray = new int[gridSize][gridSize];
         for (int row = 0; row < grid.length; row++) {
             for (int col = 0; col < grid.length; col++) {
@@ -426,12 +430,24 @@ public class GameGrid {
         return time;
     }
 
+    private int randInt(int min, int max) {
+        Random random = new Random();
+        int value = random.nextInt((max - min) + 1) + min;
+        return value;
+    }
+
+    private int randInt(int min, int max, long gameSeed) {
+        Random random = new Random(gameSeed);
+        int clues = random.nextInt((max - min) + 1) + min;
+        return clues;
+    }
+
     public static void main(String[] args) throws IOException{
         GameGrid gameGrid = new GameGrid(9);
         //gameGrid.arrayToGrid(example);
-//        gameGrid.setupForNewGame();
-//        gameGrid.easy();
-//        gameGrid.writeGridToFile();
+        gameGrid.setupForNewGame();
+        gameGrid.easy();
+        gameGrid.writeGridToFile();
 //        gameGrid.printGrid();
     }
 }
