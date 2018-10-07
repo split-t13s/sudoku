@@ -260,9 +260,7 @@ public class GameGridTest {
         for (int row = 0; row < example.length; row++) {
             for (int col = 0; col < example.length; col++) {
                 str += example[row][col];
-                if (row == gridSize - 1 && col == gridSize - 1) {
-                    // skip last number
-                } else {
+                if (grid[row][col] != grid[gridSize - 1][gridSize - 1]) {
                     str += ",";
                 }
             }

@@ -13,16 +13,7 @@ import java.util.Random;
 public class GameGrid {
 
     public GridNumber[][] grid;
-    int gridSize;           // Current gridsize will be 9x9; this will be extended to include 4x4, 12x12 and 16x16
-    static int[][] example = {{5, 0, 0, 6, 7, 0, 9, 0, 0},
-            {0, 4, 0, 8, 0, 0, 0, 0, 0},
-            {8, 0, 0, 5, 0, 0, 6, 1, 3},
-            {0, 6, 2, 4, 0, 0, 0, 7, 0},
-            {1, 0, 0, 0, 0, 3, 0, 2, 0},
-            {3, 7, 4, 9, 0, 8, 0, 0, 0},
-            {0, 9, 6, 1, 0, 7, 8, 0, 2},
-            {2, 1, 8, 0, 0, 6, 0, 4, 5},
-            {0, 5, 0, 0, 8, 0, 0, 9, 0}};
+    int gridSize;           // Current grid size will be 9x9; this will be extended to include 4x4, 12x12 and 16x16
 
     public GameGrid(int gridSize) {
         grid = new GridNumber[gridSize][gridSize];
@@ -315,9 +306,6 @@ public class GameGrid {
                         prevSquares.add(nextSquare);
                         nextSquare = getNextEmpty();
                         backtrace = false;
-                        // print
-                        //System.out.println(number);
-                        //printGrid();
                         break numLoop;
                     } else if (checkDuplicate(row, col, number) && number == 9) {
                         grid[row][col].setValue(0);
@@ -333,6 +321,7 @@ public class GameGrid {
 
     /**
      * Get current state of game grid and store all values in a .sav file.
+     *
      * @throws IOException
      */
     public void writeGridToFile() throws IOException {
@@ -341,9 +330,7 @@ public class GameGrid {
         for (int row = 0; row < grid.length; row++) {
             for (int col = 0; col < grid.length; col++) {
                 str += grid[row][col].getValue();
-                if (row == gridSize - 1 && col == gridSize - 1) {
-                    // skip last number
-                } else {
+                if (grid[row][col] != grid[gridSize - 1][gridSize - 1]) {
                     str += ",";
                 }
             }
@@ -358,6 +345,7 @@ public class GameGrid {
 
     /**
      * Read .sav file to restore a game grid from a previous state.
+     *
      * @param filename - the file to be read.
      * @return - int[][] containing the restored grid.
      * @throws IOException
@@ -394,9 +382,10 @@ public class GameGrid {
 
     /**
      * Translates a given integer array to the game grid.
+     *
      * @param array - the array to be passed to the grid
      */
-    public void arrayToGrid(int[][] array ) {
+    public void arrayToGrid(int[][] array) {
         for (int row = 0; row < array.length; row++) {
             for (int col = 0; col < array.length; col++) {
                 grid[row][col].setValue(array[row][col]);
@@ -406,6 +395,7 @@ public class GameGrid {
 
     /**
      * Stores the current game grid in an integer array.
+     *
      * @return - the int array containing the grid
      */
     public int[][] gridToArray() {
@@ -420,6 +410,7 @@ public class GameGrid {
 
     /**
      * Get current datetime with illegal characters replaced and nanoseconds removed.
+     *
      * @return String representation of datetime for filename use
      */
     private String generateFilename() {
@@ -442,7 +433,7 @@ public class GameGrid {
         return clues;
     }
 
-    public static void main(String[] args) throws IOException{
+    public static void main(String[] args) throws IOException {
         GameGrid gameGrid = new GameGrid(9);
         //gameGrid.arrayToGrid(example);
         gameGrid.setupForNewGame();
