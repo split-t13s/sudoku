@@ -3,8 +3,8 @@ package tests;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -200,7 +200,7 @@ public class GameGridTest {
     /**
      * Brute force
      */
-    @RepeatedTest(1)
+    @Test
     public void whileSolve() {
         Square nextSquare = gameGrid.getNextEmpty();
         List<Square> prevSquares = new ArrayList<Square>();
@@ -251,7 +251,7 @@ public class GameGridTest {
         }
     }
 
-    @RepeatedTest(1)
+    @Test
     public void writeGridToFile() throws IOException {
         String str = "";
         String check = "5,0,0,6,7,0,9,0,0,0,4,0,8,0,0,0,0,0,8,0,0,5,0,0,6,1,3,0,6,2,4,0,0,0,7,0,1,0,0,0,0,3,0,2,0,3," +
@@ -272,7 +272,7 @@ public class GameGridTest {
         assertEquals(check, read);
     }
 
-    @RepeatedTest(1)
+    @Test
     public void readGridFromFile() throws IOException {
         int[][] gridFromFile = new int[gridSize][gridSize];
         Path path = Paths.get("saves/test.sav");
@@ -287,8 +287,7 @@ public class GameGridTest {
         }
         assertArrayEquals(example, gridFromFile);
     }
-
-
+    
     private int randInt(int min, int max) {
         Random random = new Random();
         int value = random.nextInt((max - min) + 1) + min;
