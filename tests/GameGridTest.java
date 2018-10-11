@@ -287,7 +287,7 @@ public class GameGridTest {
         }
         assertArrayEquals(example, gridFromFile);
     }
-    
+
     private int randInt(int min, int max) {
         Random random = new Random();
         int value = random.nextInt((max - min) + 1) + min;
