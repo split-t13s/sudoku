@@ -16,13 +16,15 @@ public class Node {
      * Inserts node at the end of the list.
      * @param root - the first node of the list
      * @param label
+     * @return - new node with established links
      */
-    public void insert(Node root, int label) {
+    public Node insert(Node root, int label) {
         Node newnode = new Node(label);
         newnode.setNext(root);
         newnode.setPrev(root.getPrev());
         newnode.getNext().setPrev(newnode);
         newnode.getPrev().setNext(newnode);
+        return newnode;
     }
 
     /**
