@@ -71,4 +71,12 @@ public class Node {
     public void setNext(Node next) {
         this.next = next;
     }
+
+    public int getLabel() {
+        return label;
+    }
+
+    public void setLabel(int label) {
+        this.label = label;
+    }
 }
