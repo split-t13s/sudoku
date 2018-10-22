@@ -167,9 +167,11 @@ public class ConstraintMatrixTest {
         } while (currNode != rows[rowIndex]);
         Node rowOneScanner = rows[0];
         Node rowThreeScanner = rows[2];
+        Node column = columns[0];
         do {
             assertEquals(rowThreeScanner, rowOneScanner.getDown());
             assertEquals(rowOneScanner, rowThreeScanner.getUp());
+            assertEquals(2, ((ColumnNode) column).getSize());
             rowOneScanner = rowOneScanner.getRight();
             rowThreeScanner = rowThreeScanner.getRight();
         } while (rowOneScanner != rows[0]);
@@ -191,6 +193,7 @@ public class ConstraintMatrixTest {
                 currNode.setUp(currNode.getHeader().getUp());
                 currNode.getDown().setUp(currNode);
                 currNode.getUp().setDown(currNode);
+                currNode.getHeader().incrementSize();
             }
             currNode = currNode.getRight();
         } while (currNode != rows[rowIndex]);
@@ -199,9 +202,17 @@ public class ConstraintMatrixTest {
         Node column = columns[0];
         do {
             assertEquals(column, scanner.getDown());
+            assertEquals(3, ((ColumnNode) column).getSize());
             column = column.getRight();
             scanner = scanner.getRight();
         } while (scanner != rows[rowIndex]);
+    }
+
+    @Test
+    public void removeColumn() {
+        Node[][] matrix = exampleMatrix();
+        ColumnNode[] columns = (ColumnNode[]) matrix[0];
+
     }
 
     private Node[][] exampleMatrix() {

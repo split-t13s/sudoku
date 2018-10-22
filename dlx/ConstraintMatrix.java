@@ -39,6 +39,7 @@ public class ConstraintMatrix {
 
     /**
      * Remove node from list but keep links.
+     * Used to remove constraints.
      *
      * @param node - the removed node
      */
@@ -147,6 +148,7 @@ public class ConstraintMatrix {
                 currNode.setUp(currNode.getHeader().getUp());
                 currNode.getDown().setUp(currNode);
                 currNode.getUp().setDown(currNode);
+                currNode.getHeader().incrementSize();
             }
             currNode = currNode.getRight();
         } while (currNode != rowHead);
