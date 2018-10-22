@@ -124,7 +124,7 @@ public class ConstraintMatrix {
         Node rowHead = rows[rowIndex];
         Node currNode = rowHead;
         do {
-            if (currNode.getDown() != currNode) {
+            if (currNode.getDown() != currNode) {   // prevent removing the same node twice
                 currNode.getDown().setUp(currNode.getUp());
                 currNode.getUp().setDown(currNode.getDown());
                 currNode.setDown(currNode);
@@ -143,7 +143,7 @@ public class ConstraintMatrix {
         Node rowHead = rows[rowIndex];
         Node currNode = rowHead;
         do {
-            if (currNode.getDown() == currNode) {
+            if (currNode.getDown() == currNode) {   // prevent reinserting the same node twice
                 currNode.setDown(currNode.getHeader());
                 currNode.setUp(currNode.getHeader().getUp());
                 currNode.getDown().setUp(currNode);

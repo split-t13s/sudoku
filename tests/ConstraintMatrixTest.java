@@ -148,11 +148,9 @@ public class ConstraintMatrixTest {
 
     @Test
     public void removeRow() {
-        // set up matrix
         Node[][] matrix = exampleMatrix();
         ColumnNode[] columns = (ColumnNode[]) matrix[0];
         Node[] rows = matrix[1];
-        // end of set up
         int rowIndex = 1;
         Node currNode = rows[rowIndex];
         do {
@@ -179,11 +177,9 @@ public class ConstraintMatrixTest {
 
     @Test
     public void reinsertRow() {
-        // set up matrix
         Node[][] matrix = exampleMatrix();
         ColumnNode[] columns = (ColumnNode[]) matrix[0];
         Node[] rows = matrix[1];
-        // end of set up
         int rowIndex = 1;
         constraintMatrix.removeRow(rowIndex, rows);
         Node currNode = rows[rowIndex];
