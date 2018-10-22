@@ -2,30 +2,57 @@ package dlx;
 
 public class Node {
 
-    Node prev;
-    Node next;
+    Node up;
+    Node down;
+    Node left;
+    Node right;
+    ColumnNode header;
     int label;
 
     public Node (int label) {
         this.label = label;
-        next = null;
-        prev = null;
+        right = null;
+        left = null;
     }
 
-    public Node getPrev() {
-        return prev;
+    public Node getLeft() {
+        return left;
     }
 
-    public void setPrev(Node prev) {
-        this.prev = prev;
+    public void setLeft(Node left) {
+        this.left = left;
     }
 
-    public Node getNext() {
-        return next;
+    public Node getRight() {
+        return right;
     }
 
-    public void setNext(Node next) {
-        this.next = next;
+    public void setRight(Node right) {
+        this.right = right;
+    }
+
+    public Node getUp() {
+        return up;
+    }
+
+    public void setUp(Node up) {
+        this.up = up;
+    }
+
+    public Node getDown() {
+        return down;
+    }
+
+    public void setDown(Node down) {
+        this.down = down;
+    }
+
+    public ColumnNode getHeader() {
+        return header;
+    }
+
+    public void setHeader(ColumnNode header) {
+        this.header = header;
     }
 
     public int getLabel() {
