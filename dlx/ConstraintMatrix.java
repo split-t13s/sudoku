@@ -153,4 +153,16 @@ public class ConstraintMatrix {
             currNode = currNode.getRight();
         } while (currNode != rowHead);
     }
+
+    /**
+     * Remove a column from the matrix.
+     * @param columnIndex - the column to be removed
+     */
+    public void removeColumn(int columnIndex) {
+        Node currNode = columns[columnIndex];
+        do {
+            cover(currNode);
+            currNode = currNode.getDown();
+        } while (currNode != columns[columnIndex]);
+    }
 }

@@ -208,8 +208,23 @@ public class ConstraintMatrixTest {
     public void removeColumn() {
         Node[][] matrix = exampleMatrix();
         ColumnNode[] columns = (ColumnNode[]) matrix[0];
+        Node[] rows = matrix[1];
+        int columnIndex = 1;
+        Node currNode = columns[columnIndex];
+        do {
+            constraintMatrix.cover(currNode);
+            currNode = currNode.getDown();
+        } while (currNode != columns[columnIndex]);
 
+        Node scanner = columns[0].getDown();
+        Node check = columns[2].getDown();
+        do {
+            assertEquals(check, scanner.getRight());
+            scanner = scanner.getDown();
+            check = check.getDown();
+        } while (scanner != columns[0]);
     }
+
 
     private Node[][] exampleMatrix() {
         ColumnNode[] columns = new ColumnNode[3];
@@ -224,10 +239,10 @@ public class ConstraintMatrixTest {
             if (i == 0) {
                 rows[i] = constraintMatrix.createDetail(prevOne, columns[i], i + 10);
                 prevOne = rows[i];
-                rows[i+1] = constraintMatrix.createDetail(prevTwo, columns[i], i + 13);
-                prevTwo = rows[i+1];
-                rows[i+2] = constraintMatrix.createDetail(prevThree, columns[i], i + 16);
-                prevThree = rows[i+2];
+                rows[i + 1] = constraintMatrix.createDetail(prevTwo, columns[i], i + 13);
+                prevTwo = rows[i + 1];
+                rows[i + 2] = constraintMatrix.createDetail(prevThree, columns[i], i + 16);
+                prevThree = rows[i + 2];
             } else {
                 prevOne = constraintMatrix.createDetail(prevOne, columns[i], i + 10);
                 prevTwo = constraintMatrix.createDetail(prevTwo, columns[i], i + 13);
