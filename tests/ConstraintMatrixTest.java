@@ -225,6 +225,58 @@ public class ConstraintMatrixTest {
         } while (scanner != columns[0]);
     }
 
+    @Test
+    public void reinsertColumn() {
+        Node[][] matrix = exampleMatrix();
+        ColumnNode[] columns = (ColumnNode[]) matrix[0];
+        Node[] rows = matrix[1];
+        int columnIndex = 1;
+        constraintMatrix.removeColumn(columnIndex, columns);
+        Node currNode = columns[columnIndex];
+        do {
+            constraintMatrix.uncover(currNode);
+            currNode = currNode.getDown();
+        } while (currNode != columns[columnIndex]);
+        Node scannerOne = columns[0];
+        Node scannerTwo = columns[2];
+        Node check = columns[1];
+        do {
+            assertEquals(check, scannerOne.getRight());
+            assertEquals(check, scannerTwo.getLeft());
+            scannerOne = scannerOne.getDown();
+            scannerTwo = scannerTwo.getDown();
+            check = check.getDown();
+        } while (scannerOne != columns[0]);
+    }
+
+    /**
+     * Relies on columns[0]
+     * @param columns
+     */
+    private void printMatrix(ColumnNode[] columns) {
+        // print columns
+        Node col = columns[0];
+        do {
+            System.out.print(col.getLabel() + "  ");
+            col = col.getRight();
+        } while (col != root);
+        System.out.println();
+        // print rows
+        Node cur = columns[0].getDown();
+        Node init = cur;
+        do {
+            System.out.print(cur.getLabel() + " ");
+            if (cur.getRight() == init) {
+                cur = init.getDown();
+                init = cur;
+                System.out.println();
+            } else {
+                cur = cur.getRight();
+            }
+        } while (cur != columns[0]);
+        System.out.println();
+    }
+
 
     private Node[][] exampleMatrix() {
         ColumnNode[] columns = new ColumnNode[3];

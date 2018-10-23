@@ -138,6 +138,7 @@ public class ConstraintMatrix {
     /**
      * Insert a removed row from the matrix.
      * @param rowIndex - the row to be reinserted.
+     * @param rows - Node[] of all matrix rows
      */
     public void reinsertRow(int rowIndex, Node[] rows) {
         Node rowHead = rows[rowIndex];
@@ -158,10 +159,23 @@ public class ConstraintMatrix {
      * Remove a column from the matrix.
      * @param columnIndex - the column to be removed
      */
-    public void removeColumn(int columnIndex) {
+    public void removeColumn(int columnIndex, ColumnNode[] columns) {
         Node currNode = columns[columnIndex];
         do {
             cover(currNode);
+            currNode = currNode.getDown();
+        } while (currNode != columns[columnIndex]);
+    }
+
+    /**
+     * Reinsert a removed column into the matrix.
+     * @param columnIndex - the column to be reinserted
+     * @param columns - ColumnNode[] of all matrix columns
+     */
+    public void reinsertColumn(int columnIndex, ColumnNode[] columns) {
+        Node currNode = columns[columnIndex];
+        do {
+            uncover(currNode);
             currNode = currNode.getDown();
         } while (currNode != columns[columnIndex]);
     }
