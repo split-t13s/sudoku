@@ -10,20 +10,20 @@ import dlx.Node;
 public class LatinSquare {
 
     ConstraintMatrix constraintMatrix;
-    ColumnNode[] colums;
+    ColumnNode[] columns;
     Node[] rows;
     Node root;
 
     public LatinSquare() {
         constraintMatrix = new ConstraintMatrix();
-        colums = new ColumnNode[12];
+        columns = new ColumnNode[12];
         rows = new Node[8];
         root = constraintMatrix.createRoot();
     }
 
     public void createConstraints() {
-        for (int i = 0; i < colums.length; i++) {
-            colums[i] = constraintMatrix.createHeader(i, root);
+        for (int i = 0; i < columns.length; i++) {
+            columns[i] = constraintMatrix.createHeader(i, root);
         }
     }
 
@@ -36,17 +36,17 @@ public class LatinSquare {
                     constraintsMet[1] = 4 + (row * 2 + num);
                     constraintsMet[2] = 8 + (col * 2 + num);
                     Node prev = null;
-                    for (int constraint = 0; constraint < colums.length; constraint++) {
+                    for (int constraint = 0; constraint < columns.length; constraint++) {
                         if (constraint == constraintsMet[0] || constraint == constraintsMet[1] || constraint == constraintsMet[2]) {
-                            prev = constraintMatrix.createDetail(prev, colums[constraint], 1);
+                            prev = constraintMatrix.createDetail(prev, columns[constraint], 1);
                         } else {
-                            prev = constraintMatrix.createDetail(prev, colums[constraint], 0);
+                            prev = constraintMatrix.createDetail(prev, columns[constraint], 0);
                         }
                     }
                 }
             }
         }
-        printMatrix(colums);
+        printMatrix(columns);
     }
 
     public static void main (String[] args) {
