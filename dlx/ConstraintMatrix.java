@@ -3,8 +3,6 @@ package dlx;
 public class ConstraintMatrix {
 
     Node root;
-    Node[] rows;
-    ColumnNode[] columns;
 
     public ConstraintMatrix() {
     }
