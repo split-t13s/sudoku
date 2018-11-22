@@ -21,21 +21,29 @@ public class LatinSquare {
         root = constraintMatrix.createRoot();
     }
 
+    /**
+     * Creates column headers
+     */
     public void createConstraints() {
         for (int i = 0; i < columns.length; i++) {
             columns[i] = constraintMatrix.createHeader(i, root);
         }
     }
 
+    /**
+     * Creates constraint matrix and populates with nodes.
+     * Each row matches exactly 3 constraints for Latin Square (one from each constraint type).
+     */
     public void createCandidates() {
         for (int row = 0; row < 2; row++) {
             for (int col = 0; col < 2; col++) {
                 for (int num = 0; num < 2; num++) {
+                    // Calculate constraints met by current candidate
                     int[] constraintsMet = new int[3];
                     constraintsMet[0] = row * 2 + col;
                     constraintsMet[1] = 4 + (row * 2 + num);
                     constraintsMet[2] = 8 + (col * 2 + num);
-                    Node prev = null;
+                    Node prev = null;   // Required to call createDetail()
                     for (int constraint = 0; constraint < columns.length; constraint++) {
                         if (constraint == constraintsMet[0] || constraint == constraintsMet[1] || constraint == constraintsMet[2]) {
                             prev = constraintMatrix.createDetail(prev, columns[constraint], 1);
