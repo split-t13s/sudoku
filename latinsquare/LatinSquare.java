@@ -35,6 +35,7 @@ public class LatinSquare {
      * Each row matches exactly 3 constraints for Latin Square (one from each constraint type).
      */
     public void createCandidates() {
+        int rowIndex = 0;
         for (int row = 0; row < 2; row++) {
             for (int col = 0; col < 2; col++) {
                 for (int num = 0; num < 2; num++) {
@@ -51,16 +52,40 @@ public class LatinSquare {
                             prev = constraintMatrix.createDetail(prev, columns[constraint], 0);
                         }
                     }
+                    rows[rowIndex] = prev.getRight();
+                    rowIndex++;
                 }
             }
         }
-        printMatrix(columns);
+        //printMatrix(columns);
+    }
+
+    public void setupSolve() {
+        int[] solution = new int[4];
+        boolean[] constraintsMet = new boolean[12];
+        solve(solution, constraintsMet);
+    }
+
+    public void solve(int[] solution, boolean[] constraintsMet){
+        int currConstraint = -1;
+        for (int i = 0; i < constraintsMet.length; i++) {
+            if (!constraintsMet[i]){
+                currConstraint = i;
+                break;
+            }
+        }
+        if (currConstraint == -1) {
+            // done
+        } else {
+            System.out.println(currConstraint);
+        }
     }
 
     public static void main (String[] args) {
         LatinSquare ls = new LatinSquare();
         ls.createConstraints();
         ls.createCandidates();
+        ls.setupSolve();
     }
 
     @SuppressWarnings("Duplicates")
