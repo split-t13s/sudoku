@@ -4,6 +4,7 @@ import dlx.ColumnNode;
 import dlx.ConstraintMatrix;
 import dlx.Node;
 
+import java.util.HashMap;
 import java.util.HashSet;
 
 /**
@@ -63,13 +64,19 @@ public class LatinSquare {
     }
 
     public void setupSolve() {
+        HashMap<Integer, Node> rowMap = new HashMap<Integer, Node>();
+        int rowIndex = 0;
+        for (Node rowHead : rows) {
+            rowMap.put(rowIndex, rowHead);
+            rowIndex++;
+        }
         int[] solution = new int[4];
         boolean[] constraintsMet = new boolean[12];
         int nextIndex = 0;
-        solve(solution, constraintsMet, nextIndex);
+        solve(rowMap, solution, constraintsMet, nextIndex);
     }
 
-    public void solve(int[] solution, boolean[] constraintsMet, int nextIndex){
+    public void solve(HashMap<Integer, Node> rowMap, int[] solution, boolean[] constraintsMet, int nextIndex){
         int currConstraint = -1;
         for (int i = 0; i < constraintsMet.length; i++) {
             if (!constraintsMet[i]){
@@ -81,24 +88,28 @@ public class LatinSquare {
             // done
         } else {
             //currConstraint = 2;       // for testing purposes
-            rowLoop: for (int rowIndex = 0; rowIndex < rows.length; rowIndex++) {
-                Node currNode = rows[rowIndex];
+            rowLoop: for (Integer rowIndex : rowMap.keySet()) {
+            //rowLoop: for (int rowIndex = 0; rowIndex < rowMap.size(); rowIndex++) {
+                Node currNode = rowMap.get(rowIndex);
                 boolean exit = false;
                 do {
                     if (currNode.getHeader().getLabel() == currConstraint && currNode.getLabel() == 1) {
                         System.out.println("row: " + rowIndex + " meets constraint: " + currConstraint);
                         solution[nextIndex] = rowIndex;
                         ++nextIndex;
-                        coverRows(rowIndex);
+                        int[] constraintsMetIndices = findConstraintsMet(rowIndex);
+                        coverRows(rowMap, constraintsMetIndices);
+                        markConstraintsMet(constraintsMet, constraintsMetIndices);
+                        solve(rowMap, solution, constraintsMet, nextIndex);
                         exit = true;
                         break rowLoop;
                     } else {
                         currNode = currNode.getRight();
                         // if no row meets constraint
-                        if (currNode == rows[rows.length-1]) {
+                        if (currNode == rowMap.get(rowMap.size() - 1)) {
                             System.out.println("no valid row must backtrack");
                             // check next row is within range
-                            if (solution[--nextIndex] + 1 < rows.length) {
+                            if (solution[--nextIndex] + 1 < rowMap.size()) {
                                 //currNode = rows[solution[--nextIndex] + 1];
                                 rowIndex = solution[--nextIndex]; //+ 1;
                                 solution[--nextIndex] = 0;
@@ -108,18 +119,19 @@ public class LatinSquare {
                             }
                         }
                     }
-                } while (currNode != rows[rowIndex] && !exit);
+                } while (currNode != rowMap.get(rowIndex) && !exit);
             }
         }
     }
 
-    /**
-     * For a given row, finds all constraints met by that row and all subsequent rows that also meet those constraints.
-     * Indices for these rows are stored so that the rows can be removed from the matrix.
-     * @param rowIndex - index for the head node of the row to be removed
-     */
-    private void coverRows(int rowIndex) {
-        // Find constraints met by given row
+    private boolean[] markConstraintsMet(boolean[] constraintsMet, int[] constraintsMetIndices) {
+        for (int index : constraintsMetIndices) {
+            constraintsMet[index] = true;
+        }
+        return constraintsMet;
+    }
+
+    private int[] findConstraintsMet(int rowIndex) {
         int[] constraintsMet = new int[3];
         int index = 0;
         Node rowNode = rows[rowIndex];
@@ -130,10 +142,18 @@ public class LatinSquare {
             }
             rowNode = rowNode.getRight();
         } while (rowNode != rows[rowIndex]);
+        return constraintsMet;
+    }
 
+    /**
+     * For a given row, finds all constraints met by that row and all subsequent rows that also meet those constraints.
+     * Indices for these rows are stored so that the rows can be removed from the matrix.
+     * @param rowIndex - index for the head node of the row to be removed
+     */
+    private HashMap<Integer, Node> coverRows(HashMap<Integer, Node> rowMap, int[] constraintsMetIndices) {
         // Find other rows that meet the constraints of the given row
         HashSet<Integer> rowsToRemove = new HashSet<Integer>();
-        for (int constraint : constraintsMet) {
+        for (int constraint : constraintsMetIndices) {
             ColumnNode header = columns[constraint];
             Node colNode = header.getDown();
             int currRowIndex = 0;
@@ -152,8 +172,10 @@ public class LatinSquare {
         // Remove rows from matrix
         for (Integer row : rowsToRemove) {
             constraintMatrix.removeRow(row, rows);
+            rowMap.remove(row);
         }
         printMatrix(columns);
+        return rowMap;
     }
 
     public static void main (String[] args) {
