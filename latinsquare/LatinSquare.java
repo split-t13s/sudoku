@@ -4,6 +4,8 @@ import dlx.ColumnNode;
 import dlx.ConstraintMatrix;
 import dlx.Node;
 
+import java.util.HashSet;
+
 /**
  * A test class that will apply dlx solve to a latin square.
  */
@@ -57,16 +59,17 @@ public class LatinSquare {
                 }
             }
         }
-        //printMatrix(columns);
+        printMatrix(columns);
     }
 
     public void setupSolve() {
         int[] solution = new int[4];
         boolean[] constraintsMet = new boolean[12];
-        solve(solution, constraintsMet);
+        int nextIndex = 0;
+        solve(solution, constraintsMet, nextIndex);
     }
 
-    public void solve(int[] solution, boolean[] constraintsMet){
+    public void solve(int[] solution, boolean[] constraintsMet, int nextIndex){
         int currConstraint = -1;
         for (int i = 0; i < constraintsMet.length; i++) {
             if (!constraintsMet[i]){
@@ -77,8 +80,80 @@ public class LatinSquare {
         if (currConstraint == -1) {
             // done
         } else {
-            System.out.println(currConstraint);
+            //currConstraint = 2;       // for testing purposes
+            rowLoop: for (int rowIndex = 0; rowIndex < rows.length; rowIndex++) {
+                Node currNode = rows[rowIndex];
+                boolean exit = false;
+                do {
+                    if (currNode.getHeader().getLabel() == currConstraint && currNode.getLabel() == 1) {
+                        System.out.println("row: " + rowIndex + " meets constraint: " + currConstraint);
+                        solution[nextIndex] = rowIndex;
+                        ++nextIndex;
+                        coverRows(rowIndex);
+                        exit = true;
+                        break rowLoop;
+                    } else {
+                        currNode = currNode.getRight();
+                        // if no row meets constraint
+                        if (currNode == rows[rows.length-1]) {
+                            System.out.println("no valid row must backtrack");
+                            // check next row is within range
+                            if (solution[--nextIndex] + 1 < rows.length) {
+                                //currNode = rows[solution[--nextIndex] + 1];
+                                rowIndex = solution[--nextIndex]; //+ 1;
+                                solution[--nextIndex] = 0;
+                                exit = true;
+                            } else {
+                                // no solution
+                            }
+                        }
+                    }
+                } while (currNode != rows[rowIndex] && !exit);
+            }
         }
+    }
+
+    /**
+     * For a given row, finds all constraints met by that row and all subsequent rows that also meet those constraints.
+     * Indices for these rows are stored so that the rows can be removed from the matrix.
+     * @param rowIndex - index for the head node of the row to be removed
+     */
+    private void coverRows(int rowIndex) {
+        // Find constraints met by given row
+        int[] constraintsMet = new int[3];
+        int index = 0;
+        Node rowNode = rows[rowIndex];
+        do {
+            if (rowNode.getLabel() == 1) {
+                constraintsMet[index] = rowNode.getHeader().getLabel();
+                index++;
+            }
+            rowNode = rowNode.getRight();
+        } while (rowNode != rows[rowIndex]);
+
+        // Find other rows that meet the constraints of the given row
+        HashSet<Integer> rowsToRemove = new HashSet<Integer>();
+        for (int constraint : constraintsMet) {
+            ColumnNode header = columns[constraint];
+            Node colNode = header.getDown();
+            int currRowIndex = 0;
+            do {
+                if (colNode.getLabel() == 1) {
+                    rowsToRemove.add(currRowIndex);
+                    colNode = colNode.getDown();
+                    currRowIndex++;
+                } else {
+                    colNode = colNode.getDown();
+                    currRowIndex++;
+                }
+            } while (colNode != header);
+        }
+
+        // Remove rows from matrix
+        for (Integer row : rowsToRemove) {
+            constraintMatrix.removeRow(row, rows);
+        }
+        printMatrix(columns);
     }
 
     public static void main (String[] args) {
