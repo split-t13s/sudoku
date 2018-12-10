@@ -91,10 +91,9 @@ public class GameGrid {
      */
     public void initialClues() {
         int clues = randInt(gridSize, gridSize + 3);
-        int numFilled = 0;
-        while (numFilled != clues) {
+        while (clues != 0) {
             populateGrid();
-            numFilled++;
+            clues--;
         }
     }
 
@@ -158,6 +157,7 @@ public class GameGrid {
         for (int col = 0; col < grid.length; col++) {
             if (grid[row][col].getValue() == number) {
                 isInRow = true;
+                break;
             }
         }
         return isInRow;
@@ -175,6 +175,7 @@ public class GameGrid {
         for (int row = 0; row < grid.length; row++) {
             if (grid[row][col].getValue() == number) {
                 isInCol = true;
+                break;
             }
         }
         return isInCol;
@@ -197,6 +198,7 @@ public class GameGrid {
             for (int col = startCol; col < startCol + 3; col++) {
                 if (grid[row][col].getValue() == number) {
                     isInBox = true;
+                    break;
                 }
             }
         }
