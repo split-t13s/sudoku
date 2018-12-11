@@ -235,11 +235,11 @@ public class GameGrid {
      */
     public int getBoxStart(int init) {
         int boxStart = 0;
-        if (init >= 6) {
+        if (6 <= init) {
             boxStart = 6;
-        } else if (3 <= init && init < 6) {
+        } else if (3 <= init) {
             boxStart = 3;
-        } else if (0 <= init && init < 3) {
+        } else if (0 <= init) {
             boxStart = 0;
         }
         return boxStart;

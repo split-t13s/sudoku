@@ -87,8 +87,8 @@ public class GameGridTest {
         int boxStartRow = 0;
         int boxStartCol = 0;
         int initRow = randInt(0, gridSize - 1);
-        int initCol = 8;
-        int number = 4;
+        int initCol = randInt(0, gridSize - 1);
+        int number = randInt(1, gridSize);
         boolean isInBox = false;
         String error = "";
         boxStartRow = gameGrid.getBoxStart(initRow);
@@ -96,7 +96,7 @@ public class GameGridTest {
         for (int row = boxStartRow; row < boxStartRow + 3; row++) {
             for (int col = boxStartCol; col < boxStartCol + +3; col++) {
                 if (grid[row][col].getValue() == number) {
-                    error = "number: " + number + " row: " + row + " col: " + (col + 1);
+                    error = "number: " + number + " row: " + (row + 1)+ " col: " + (col + 1);
                     isInBox = true;
                 }
             }
