@@ -15,7 +15,7 @@ public class GridNumberTest {
 
     @BeforeEach
     public void setUp() {
-        number = new GridNumber(5);
+        number = new GridNumber(5, 2, 3);
     }
 
     @Test
@@ -26,7 +26,7 @@ public class GridNumberTest {
     @Test
     public void getValueAsString() {
         assertEquals("5", number.getValueAsString());
-        GridNumber zero = new GridNumber();
+        GridNumber zero = new GridNumber(0 ,0);
         assertEquals(" ", zero.getValueAsString());
     }
 
