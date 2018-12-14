@@ -36,7 +36,7 @@ public class GameGrid {
     public void emptyGrid() {
         for (int i = 0; i < grid.length; i++) {
             for (int j = 0; j < grid.length; j++) {
-                grid[i][j] = new GridNumber();
+                grid[i][j] = new GridNumber(i, j);
             }
         }
     }
@@ -248,22 +248,20 @@ public class GameGrid {
     @SuppressWarnings("Duplicates")
     /**
      * Searches the grid for the next instance of an empty slot (represented by 0).
-     * @return Square object that holds coordinates of next empty square
+     * @return GridNumber object of next empty position in grid
      */
-    public Square getNextEmpty() {
-        Square square = new Square();
+    public GridNumber getNextEmpty() {
+        GridNumber nextEmpty = null;
         rowLoop:
         for (int row = 0; row < grid.length; row++) {
             for (int col = 0; col < grid.length; col++) {
                 if (grid[row][col].getValue() == 0) {
-                    square.setRow(row);
-                    square.setCol(col);
-                    square.setEmpty(true);
+                    nextEmpty = grid[row][col];
                     break rowLoop;
                 }
             }
         }
-        return square;
+        return nextEmpty;
     }
 
     @SuppressWarnings("Duplicates")
@@ -272,41 +270,40 @@ public class GameGrid {
      * StackOverflow error. recurSolve() moved to legacy_methods.old
      */
     public void whileSolve() {
-        Square nextSquare = getNextEmpty();
-        List<Square> prevSquares = new ArrayList<Square>();
+        GridNumber nextEmpty = getNextEmpty();
+        List<GridNumber> allEmpty = new ArrayList<GridNumber>();
         int row = 0;
         int col = 0;
-        int squareNum = 0;
+        int value = 0;
         boolean backtrace = false;
-        while (nextSquare.isEmpty()) {
+        while (nextEmpty != null) {
             if (backtrace) {
-                // Get last number and remove from previous moves, increment from last number
-                Square prevSquare = prevSquares.get((prevSquares.size() - 1));
-                row = prevSquare.getRow();
-                col = prevSquare.getCol();
-                squareNum = prevSquare.getNumber();
-                nextSquare = prevSquare;        // prevSquare will be empty so nextSquare.isEmpty() will be true
-                prevSquares.remove(prevSquare);
+                GridNumber prevEmpty = allEmpty.get(allEmpty.size() - 1);
+                row = prevEmpty.getRow();
+                col = prevEmpty.getCol();
+                value = prevEmpty.getValue();
+                nextEmpty = prevEmpty;
+                allEmpty.remove(prevEmpty);
             } else {
-                // Get next empty square
-                nextSquare = getNextEmpty();
-                row = nextSquare.getRow();
-                col = nextSquare.getCol();
-                squareNum = nextSquare.getNumber();
-                if (squareNum == 0) {
+                // Get next empty GridNumber
+                nextEmpty = getNextEmpty();
+                row = nextEmpty.getRow();
+                col = nextEmpty.getCol();
+                value = nextEmpty.getValue();
+                if (value == 0) {
                     // 0 is not a valid solution number
-                    squareNum = 1;
+                    value = 1;
                 }
             }
-            if (nextSquare.isEmpty()) {
+            if (nextEmpty != null) {
                 numLoop:
-                for (int number = squareNum; number <= 9; number++) {
+                for (int number = value; number <= 9; number++) {
                     if (!checkDuplicate(row, col, number)) {
                         // Set chosen number
                         grid[row][col].setValue(number);
-                        nextSquare.setNumber(number);
-                        prevSquares.add(nextSquare);
-                        nextSquare = getNextEmpty();
+                        nextEmpty.setValue(number);
+                        allEmpty.add(nextEmpty);
+                        nextEmpty = getNextEmpty();
                         backtrace = false;
                         break numLoop;
                     } else if (checkDuplicate(row, col, number) && number == 9) {
