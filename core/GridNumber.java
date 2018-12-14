@@ -4,20 +4,26 @@ import java.util.HashSet;
 
 public class GridNumber {
 
-    public int value;
-    public String valueAsString;
-    public HashSet<Integer> candidates;     // Hashset used to ignore duplicates
+    private int value;
+    private String valueAsString;
+    private HashSet<Integer> candidates;     // Hashset used to ignore duplicates
+    private int row;
+    private int col;
 
-    public GridNumber(){
+    public GridNumber(int row, int col){
         this.valueAsString = " ";
         this.value = 0;
         this.candidates = new HashSet<Integer>();
+        this.row = row;
+        this.col = col;
     }
 
-    public GridNumber(int value){
+    public GridNumber(int value, int row, int col){
         this.value = value;
         this.valueAsString = Integer.toString(value);
         this.candidates = new HashSet<Integer>();
+        this.row = row;
+        this.col = col;
     }
 
     public int getValue() {
@@ -43,6 +49,22 @@ public class GridNumber {
 
     public void setValueAsString(String sValue) {
         this.valueAsString = sValue;
+    }
+
+    public int getRow() {
+        return row;
+    }
+
+    public void setRow(int row) {
+        this.row = row;
+    }
+
+    public int getCol() {
+        return col;
+    }
+
+    public void setCol(int col) {
+        this.col = col;
     }
 
     public void addCandidate(int candidate){
