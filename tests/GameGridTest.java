@@ -16,7 +16,6 @@ import java.util.Random;
 
 import core.GameGrid;
 import core.GridNumber;
-import core.Square;
 
 public class GameGridTest {
 
@@ -96,7 +95,7 @@ public class GameGridTest {
         for (int row = boxStartRow; row < boxStartRow + 3; row++) {
             for (int col = boxStartCol; col < boxStartCol + +3; col++) {
                 if (grid[row][col].getValue() == number) {
-                    error = "number: " + number + " row: " + (row + 1)+ " col: " + (col + 1);
+                    error = "number: " + number + " row: " + (row + 1) + " col: " + (col + 1);
                     isInBox = true;
                 }
             }
@@ -202,40 +201,40 @@ public class GameGridTest {
      */
     @Test
     public void whileSolve() {
-        Square nextSquare = gameGrid.getNextEmpty();
-        List<Square> prevSquares = new ArrayList<Square>();
+        GridNumber nextEmpty = gameGrid.getNextEmpty();
+        List<GridNumber> allEmpty = new ArrayList<GridNumber>();
         int row = 0;
         int col = 0;
-        int squareNum = 0;
+        int value = 0;
         boolean backtrace = false;
-        while (nextSquare.isEmpty()) {
+        while (nextEmpty != null) {
             if (backtrace) {
-                Square prevSquare = prevSquares.get((prevSquares.size() - 1));
-                row = prevSquare.getRow();
-                col = prevSquare.getCol();
-                squareNum = prevSquare.getNumber();
-                nextSquare = prevSquare;
-                prevSquares.remove(prevSquare);
+                GridNumber prevEmpty = allEmpty.get(allEmpty.size() - 1);
+                row = prevEmpty.getRow();
+                col = prevEmpty.getCol();
+                value = prevEmpty.getValue();
+                nextEmpty = prevEmpty;
+                allEmpty.remove(prevEmpty);
             } else {
-                // Get next empty square
-                nextSquare = gameGrid.getNextEmpty();
-                row = nextSquare.getRow();
-                col = nextSquare.getCol();
-                squareNum = nextSquare.getNumber();
-                if (squareNum == 0) {
+                // Get next empty GridNumber
+                nextEmpty = gameGrid.getNextEmpty();
+                row = nextEmpty.getRow();
+                col = nextEmpty.getCol();
+                value = nextEmpty.getValue();
+                if (value == 0) {
                     // 0 is not a valid solution number
-                    squareNum = 1;
+                    value = 1;
                 }
             }
-            if (nextSquare.isEmpty()) {
+            if (nextEmpty != null) {
                 numLoop:
-                for (int number = squareNum; number <= 9; number++) {
+                for (int number = value; number <= 9; number++) {
                     if (!gameGrid.checkDuplicate(row, col, number)) {
                         // Set chosen number
                         grid[row][col].setValue(number);
-                        nextSquare.setNumber(number);
-                        prevSquares.add(nextSquare);
-                        nextSquare = gameGrid.getNextEmpty();
+                        nextEmpty.setValue(number);
+                        allEmpty.add(nextEmpty);
+                        nextEmpty = gameGrid.getNextEmpty();
                         backtrace = false;
                         break numLoop;
                     } else if (gameGrid.checkDuplicate(row, col, number) && number == 9) {
@@ -287,7 +286,7 @@ public class GameGridTest {
         }
         assertArrayEquals(example, gridFromFile);
     }
-    
+
     private int randInt(int min, int max) {
         Random random = new Random();
         int value = random.nextInt((max - min) + 1) + min;
